@@ -29,16 +29,7 @@ async function comparePasswords(supplied: string, stored: string) {
 }
 
 export async function setupAuth(app: Express) {
-  // Initialize default admin user if not exists
-  const adminUser = await storage.getUserByUsername("admin");
-  if (!adminUser) {
-    const hashedPassword = await hashPassword("Rennsz5842");
-    await storage.createUser({
-      username: "admin",
-      password: hashedPassword,
-      isAdmin: true,
-    });
-  }
+  // Admin user initialization has been moved to DatabaseStorage initializeDefaults()
 
   const sessionSettings: session.SessionOptions = {
     secret: process.env.SESSION_SECRET || "RENNSZ-luxury-travel-streaming-secret",

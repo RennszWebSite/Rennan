@@ -3,10 +3,14 @@ import {
   Stream, InsertStream, 
   Announcement, InsertAnnouncement, 
   GalleryImage, InsertGalleryImage,
-  SiteSettings, InsertSiteSettings, UpdateSiteSettings
+  SiteSettings, InsertSiteSettings, UpdateSiteSettings,
+  users, streams, announcements, galleryImages, siteSettings
 } from "@shared/schema";
 import session from "express-session";
 import createMemoryStore from "memorystore";
+import connectPg from "connect-pg-simple";
+import { db, pool } from "./db";
+import { eq, desc } from "drizzle-orm";
 
 const MemoryStore = createMemoryStore(session);
 
@@ -45,7 +49,7 @@ export interface IStorage {
   updateSiteSettings(settings: UpdateSiteSettings): Promise<SiteSettings | undefined>;
   
   // Session store
-  sessionStore: session.SessionStore;
+  sessionStore: any; // Type any to avoid typing issues with express-session
 }
 
 export class MemStorage implements IStorage {
@@ -55,7 +59,7 @@ export class MemStorage implements IStorage {
   private galleryImages: Map<number, GalleryImage>;
   private siteSettings: SiteSettings | undefined;
   
-  sessionStore: session.SessionStore;
+  sessionStore: any; // Using any type instead of session.SessionStore
   
   private userIdCounter: number;
   private streamIdCounter: number;
@@ -336,4 +340,261 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export class DatabaseStorage implements IStorage {
+  sessionStore: any; // Using any type instead of session.SessionStore
+
+  constructor() {
+    // Initialize session store with PostgreSQL
+    const PostgresSessionStore = connectPg(session);
+    this.sessionStore = new PostgresSessionStore({
+      pool,
+      createTableIfMissing: true,
+    });
+    
+    // Initialize database with default values
+    this.initializeDefaults();
+  }
+
+  private async initializeDefaults() {
+    try {
+      // Check if admin user exists, if not create default admin
+      const adminExists = await this.getUserByUsername("admin");
+      if (!adminExists) {
+        await this.createUser({
+          username: "admin",
+          password: "password", // This should be properly hashed in auth.ts
+          isAdmin: true
+        });
+      }
+      
+      // Check if site settings exist, if not create defaults
+      const settings = await this.getSiteSettings();
+      if (!settings) {
+        await this.initializeSiteSettings({
+          siteTitle: "RENNSZ - Premium Streamer",
+          metaDescription: "Join RENNSZ on his streaming journey. Premium streaming experiences with the best content.",
+          footerText: "Made with ❤️ by sf.xen on discord",
+          socialLinks: {
+            twitchMain: "https://www.twitch.tv/rennsz",
+            twitchGaming: "https://www.twitch.tv/rennszino",
+            twitter: "https://x.com/rennsz96?s=21",
+            xCommunity: "https://x.com/i/communities/1823168507401634218",
+            instagram: "https://www.instagram.com/rennsz?igsh=MWhjYjg2ZDV4dHc0bw==",
+            discord: "https://discord.gg/hUTXCaSdKC"
+          },
+          themeSettings: {
+            currentTheme: "dark",
+            primaryColor: "#4A00E0",
+            secondaryColor: "#F2C94C",
+            accentTeal: "#2DD4BF",
+            accentPurple: "#8B5CF6"
+          }
+        });
+      }
+      
+      // Check if streams exist, if not create defaults
+      const allStreams = await this.getAllStreams();
+      if (allStreams.length === 0) {
+        // Add default featured stream
+        const defaultStream = await this.createStream({
+          name: "RENNSZ - Main Stream",
+          url: "https://www.twitch.tv/rennsz",
+          description: "Premium streaming content with the best production quality",
+          type: "main",
+          isFeatured: true
+        });
+        
+        // Add default non-featured stream
+        await this.createStream({
+          name: "RENNSZ Gaming",
+          url: "https://www.twitch.tv/rennszino",
+          description: "Gaming content and competitive gameplay",
+          type: "gaming",
+          isFeatured: false
+        });
+      }
+      
+      // Check if announcements exist, if not create defaults
+      const announcements = await this.getAllAnnouncements();
+      if (announcements.length === 0) {
+        await this.createAnnouncement({
+          title: "New Streaming Schedule!",
+          content: "I'll be streaming every Monday, Wednesday, and Friday at 8 PM EST. Don't miss out on the action!",
+          type: "schedule",
+          imageUrl: "/assets/IMG_2456.png",
+        });
+        
+        await this.createAnnouncement({
+          title: "New Gear Setup!",
+          content: "Just upgraded my streaming setup with new cameras and audio equipment for the best quality streams!",
+          type: "equipment",
+          imageUrl: "/assets/IMG_2457.png",
+        });
+      }
+    } catch (error) {
+      console.error("Error initializing default data:", error);
+    }
+  }
+
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+  
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
+  }
+  
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db.insert(users).values(insertUser).returning();
+    return user;
+  }
+  
+  async getAllStreams(): Promise<Stream[]> {
+    return await db.select().from(streams);
+  }
+  
+  async getStream(id: number): Promise<Stream | undefined> {
+    const [stream] = await db.select().from(streams).where(eq(streams.id, id));
+    return stream;
+  }
+  
+  async getFeaturedStream(): Promise<Stream | undefined> {
+    const [stream] = await db.select().from(streams).where(eq(streams.isFeatured, true));
+    return stream;
+  }
+  
+  async createStream(stream: InsertStream): Promise<Stream> {
+    // If this is marked as featured, unfeature all others
+    if (stream.isFeatured) {
+      await db.update(streams).set({ isFeatured: false });
+    }
+    
+    const [newStream] = await db.insert(streams).values(stream).returning();
+    return newStream;
+  }
+  
+  async updateStream(id: number, stream: InsertStream): Promise<Stream | undefined> {
+    // If this is being set as featured, unfeature all others
+    if (stream.isFeatured) {
+      await db.update(streams)
+        .set({ isFeatured: false })
+        .where(eq(streams.id, id).not());
+    }
+    
+    const [updatedStream] = await db
+      .update(streams)
+      .set(stream)
+      .where(eq(streams.id, id))
+      .returning();
+    
+    return updatedStream;
+  }
+  
+  async setFeaturedStream(id: number): Promise<Stream | undefined> {
+    // Unfeature all streams
+    await db.update(streams).set({ isFeatured: false });
+    
+    // Feature the selected stream
+    const [featuredStream] = await db
+      .update(streams)
+      .set({ isFeatured: true })
+      .where(eq(streams.id, id))
+      .returning();
+    
+    return featuredStream;
+  }
+  
+  async deleteStream(id: number): Promise<boolean> {
+    const result = await db.delete(streams).where(eq(streams.id, id));
+    return !!result;
+  }
+  
+  async getAllAnnouncements(): Promise<Announcement[]> {
+    const result = await db
+      .select()
+      .from(announcements)
+      .orderBy(desc(announcements.createdAt));
+    return result;
+  }
+  
+  async getAnnouncement(id: number): Promise<Announcement | undefined> {
+    const [announcement] = await db
+      .select()
+      .from(announcements)
+      .where(eq(announcements.id, id));
+    return announcement;
+  }
+  
+  async createAnnouncement(announcement: InsertAnnouncement): Promise<Announcement> {
+    const [newAnnouncement] = await db
+      .insert(announcements)
+      .values({ ...announcement, createdAt: new Date() })
+      .returning();
+    return newAnnouncement;
+  }
+  
+  async updateAnnouncement(id: number, announcement: InsertAnnouncement): Promise<Announcement | undefined> {
+    const [updatedAnnouncement] = await db
+      .update(announcements)
+      .set(announcement)
+      .where(eq(announcements.id, id))
+      .returning();
+    return updatedAnnouncement;
+  }
+  
+  async deleteAnnouncement(id: number): Promise<boolean> {
+    const result = await db.delete(announcements).where(eq(announcements.id, id));
+    return !!result;
+  }
+  
+  async getAllGalleryImages(): Promise<GalleryImage[]> {
+    // We're removing the gallery as requested, but keeping the method for compatibility
+    return [];
+  }
+  
+  async getGalleryImage(id: number): Promise<GalleryImage | undefined> {
+    // We're removing the gallery as requested, but keeping the method for compatibility
+    return undefined;
+  }
+  
+  async createGalleryImage(image: InsertGalleryImage): Promise<GalleryImage> {
+    // We're removing the gallery as requested, but keeping the method for compatibility
+    throw new Error("Gallery feature has been removed");
+  }
+  
+  async updateGalleryImage(id: number, image: InsertGalleryImage): Promise<GalleryImage | undefined> {
+    // We're removing the gallery as requested, but keeping the method for compatibility
+    throw new Error("Gallery feature has been removed");
+  }
+  
+  async deleteGalleryImage(id: number): Promise<boolean> {
+    // We're removing the gallery as requested, but keeping the method for compatibility
+    return false;
+  }
+  
+  async getSiteSettings(): Promise<SiteSettings | undefined> {
+    const [settings] = await db.select().from(siteSettings);
+    return settings;
+  }
+  
+  async initializeSiteSettings(settings: InsertSiteSettings): Promise<SiteSettings> {
+    const [newSettings] = await db
+      .insert(siteSettings)
+      .values(settings)
+      .returning();
+    return newSettings;
+  }
+  
+  async updateSiteSettings(settings: UpdateSiteSettings): Promise<SiteSettings | undefined> {
+    const [updatedSettings] = await db
+      .update(siteSettings)
+      .set(settings)
+      .returning();
+    return updatedSettings;
+  }
+}
+
+// Use database storage instead of memory storage
+export const storage = new DatabaseStorage();

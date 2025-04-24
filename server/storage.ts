@@ -88,14 +88,14 @@ export class MemStorage implements IStorage {
       title: "Next Destination: Maldives Luxury Resort",
       content: "Get ready for our next travel adventure! We'll be exploring the premium overwater villas and underwater experiences in the Maldives. Stream starts next Monday at 3 PM EST.",
       type: "Travel Update",
-      imageUrl: "https://images.unsplash.com/photo-1573843981267-be1999ff37cd"
+      imageUrl: "/assets/IMG_2456.png"
     });
     
     this.createAnnouncement({
       title: "New Partnership: Luxury Travel Equipment",
       content: "Excited to announce our new partnership with PremiumGear! We'll be using their high-end streaming equipment during our travels for even better quality streams.",
       type: "Partnership",
-      imageUrl: "https://images.unsplash.com/photo-1616763355548-1b606f439f86"
+      imageUrl: "/assets/IMG_2457.png"
     });
     
     this.createAnnouncement({
@@ -108,21 +108,21 @@ export class MemStorage implements IStorage {
     this.createGalleryImage({
       title: "Bali Beachfront",
       description: "Exclusive oceanfront property",
-      imageUrl: "https://images.unsplash.com/photo-1520250497591-112f2f40a3f4",
+      imageUrl: "/assets/IMG_2456.png",
       category: "Travel Destinations"
     });
     
     this.createGalleryImage({
       title: "Dubai Penthouse",
       description: "Sky-high luxury accommodation",
-      imageUrl: "https://images.unsplash.com/photo-1551882547-ff40c63fe5fa",
+      imageUrl: "/assets/IMG_2457.png",
       category: "Luxury Accommodations"
     });
     
     this.createGalleryImage({
       title: "Mediterranean Yacht",
       description: "Private sailing experience",
-      imageUrl: "https://images.unsplash.com/photo-1517957754642-2870518e16f8",
+      imageUrl: "/assets/IMG_2458.jpeg",
       category: "Travel Destinations"
     });
     

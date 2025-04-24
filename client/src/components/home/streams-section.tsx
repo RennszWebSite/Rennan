@@ -40,9 +40,9 @@ export function StreamsSection() {
 
   const getStreamImage = (type: string) => {
     if (type.toLowerCase() === 'gaming') {
-      return "/assets/IMG_2457.png";
+      return "/attached_assets/IMG_2457.png";
     } else {
-      return "/assets/IMG_2458.jpeg";
+      return "/attached_assets/IMG_2458.jpeg";
     }
   };
 

@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 
 export function Dashboard() {
-  const [, navigate] = useNavigate();
+  const [, setLocation] = useLocation();
   
   const { data: streams } = useQuery<Stream[]>({
     queryKey: ["/api/streams"],
@@ -34,7 +34,7 @@ export function Dashboard() {
   };
 
   const handleNavigate = (path: string) => {
-    navigate(path);
+    setLocation(path);
   };
 
   return (

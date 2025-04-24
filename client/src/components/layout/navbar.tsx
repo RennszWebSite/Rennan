@@ -51,10 +51,8 @@ export function Navbar() {
         <div className="flex justify-between h-16">
           <div className="flex items-center">
             <div className="flex-shrink-0 flex items-center">
-              <Link href="/">
-                <a className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent-purple">
-                  RENNSZ
-                </a>
+              <Link href="/" className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-accent-purple">
+                RENNSZ
               </Link>
             </div>
             {navLinks.length > 0 && (
@@ -77,17 +75,21 @@ export function Navbar() {
           </div>
           <div className="flex items-center">
             {user?.isAdmin ? (
-              <Link href="/admin">
-                <Button variant="secondary" className="bg-gradient-to-r from-primary to-accent-purple text-white hover:bg-gradient-to-r hover:from-accent-purple hover:to-primary transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
-                  Admin Panel
-                </Button>
-              </Link>
+              <Button 
+                variant="secondary" 
+                className="bg-gradient-to-r from-primary to-accent-purple text-white hover:bg-gradient-to-r hover:from-accent-purple hover:to-primary transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
+                onClick={() => window.location.href = "/admin"}
+              >
+                Admin Panel
+              </Button>
             ) : (
-              <Link href="/auth">
-                <Button variant="secondary" className="bg-gradient-to-r from-primary to-accent-purple text-white hover:bg-gradient-to-r hover:from-accent-purple hover:to-primary transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5">
-                  Admin Login
-                </Button>
-              </Link>
+              <Button 
+                variant="secondary" 
+                className="bg-gradient-to-r from-primary to-accent-purple text-white hover:bg-gradient-to-r hover:from-accent-purple hover:to-primary transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5"
+                onClick={() => window.location.href = "/auth"}
+              >
+                Admin Login
+              </Button>
             )}
             <div className="ml-3 md:hidden">
               <button

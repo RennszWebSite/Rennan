@@ -40,7 +40,14 @@ export const siteSettings = pgTable("site_settings", {
   siteTitle: text("site_title").default("RENNSZ - Premium Travel Streamer"),
   metaDescription: text("meta_description"),
   footerText: text("footer_text").default("Made with ❤️ by sf.xen on discord"),
-  socialLinks: json("social_links").$type<Record<string, string>>(),
+  socialLinks: json("social_links").$type<{
+    twitchMain: string;
+    twitchGaming: string;
+    twitter: string;
+    xCommunity: string;
+    instagram: string;
+    discord: string;
+  }>(),
   themeSettings: json("theme_settings").$type<{
     currentTheme: string;
     primaryColor: string;

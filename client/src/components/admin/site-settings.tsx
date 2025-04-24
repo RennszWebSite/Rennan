@@ -16,7 +16,20 @@ export function SiteSettingsManager() {
     queryKey: ["/api/site-settings"],
   });
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    siteTitle: string;
+    metaDescription: string;
+    footerText: string;
+    socialLinks: {
+      twitchMain: string;
+      twitchGaming: string;
+      twitter: string;
+      xCommunity: string;
+      instagram: string;
+      discord: string;
+    };
+    analyticsEnabled: boolean;
+  }>({
     siteTitle: "",
     metaDescription: "",
     footerText: "",
@@ -37,7 +50,7 @@ export function SiteSettingsManager() {
         siteTitle: settings.siteTitle || "RENNSZ - Premium Travel Streamer",
         metaDescription: settings.metaDescription || "Join RENNSZ on luxury travel adventures around the world. Premium travel streaming experiences from exotic destinations.",
         footerText: settings.footerText || "Made with ❤️ by sf.xen on discord",
-        socialLinks: settings.socialLinks || {
+        socialLinks: settings.socialLinks ? { ...settings.socialLinks } : {
           twitchMain: "https://www.twitch.tv/rennsz",
           twitchGaming: "https://www.twitch.tv/rennszino",
           twitter: "https://x.com/rennsz96?s=21",

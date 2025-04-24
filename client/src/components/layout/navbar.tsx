@@ -106,8 +106,8 @@ export function Navbar() {
 
       {/* Mobile menu */}
       {isOpen && (
-        <div className="md:hidden">
-          <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+        <div className="md:hidden fixed inset-0 z-50 bg-dark/95">
+          <div className="flex flex-col h-full justify-center items-center space-y-6 pt-16">
             {navLinks.map((item) => (
               <a
                 key={item.href}
@@ -116,7 +116,7 @@ export function Navbar() {
                   e.preventDefault();
                   scrollToSection(item.href);
                 }}
-                className="text-gray-300 hover:text-white block px-3 py-2 rounded-md text-base font-medium"
+                className="text-gray-300 hover:text-white px-6 py-3 text-2xl font-medium transition-colors"
               >
                 {item.label}
               </a>

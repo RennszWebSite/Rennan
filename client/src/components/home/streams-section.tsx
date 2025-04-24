@@ -62,7 +62,7 @@ export function StreamsSection() {
           <p className="mt-4 text-xl text-gray-300">Check out both RENNSZ channels for different content</p>
         </div>
         
-        <div className="grid md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 px-4 md:px-0">
           {streams.map((stream) => (
             <div key={stream.id} className="bg-dark rounded-xl overflow-hidden shadow-lg border border-primary/20 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
               <div className="aspect-video relative">

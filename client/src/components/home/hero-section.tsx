@@ -108,9 +108,9 @@ export function HeroSection() {
       <div className="bg-gradient-to-b from-dark to-primary/20 absolute inset-0 z-0"></div>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-10 pb-20 relative z-10">
         <div className="text-center mb-8">
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold tracking-tight px-4">
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-white to-secondary">Explore the World with</span>
-            <span className="block mt-2 text-5xl md:text-7xl text-secondary">RENNSZ</span>
+            <span className="block mt-2 text-4xl sm:text-5xl md:text-7xl text-secondary">RENNSZ</span>
           </h1>
           <p className="mt-4 text-xl text-gray-300 max-w-3xl mx-auto">
             Join the adventure with premium streaming content across two Twitch channels. Experience RENNSZ streams like never before.

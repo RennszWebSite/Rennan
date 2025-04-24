@@ -88,10 +88,10 @@ export function SocialConnectSection() {
           <p className="mt-4 text-xl text-gray-300">Follow on social media and join the community</p>
         </div>
         
-        <div className="grid md:grid-cols-2 gap-8">
-          <div className="bg-dark-light rounded-xl p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
+        <div className="grid md:grid-cols-2 gap-6 md:gap-8 px-4 md:px-0">
+          <div className="bg-dark-light rounded-xl p-6 md:p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
             <h3 className="text-2xl font-bold mb-6">Social Media</h3>
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
               {/* Twitch Main */}
               <a 
                 href={socialLinks.twitchMain}

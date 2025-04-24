@@ -40,9 +40,9 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      <div className="flex-grow flex flex-col md:flex-row">
+      <div className="flex-grow flex flex-col lg:flex-row">
         <AdminSidebar activeSection={section} />
-        <main className="flex-grow bg-background">
+        <main className="flex-grow bg-background p-4 lg:p-6 mt-16 lg:mt-0">
           {renderContent()}
         </main>
       </div>

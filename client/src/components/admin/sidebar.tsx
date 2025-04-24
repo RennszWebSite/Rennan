@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link } from "wouter";
 import { useAuth } from "@/hooks/use-auth";
@@ -46,37 +47,37 @@ export function AdminSidebar({ activeSection }: AdminSidebarProps) {
   
   return (
     <>
-      {/* Mobile sidebar toggle button */}
-      <div className="md:hidden fixed top-20 left-4 z-30">
+      {/* Mobile Menu Button */}
+      <div className="lg:hidden fixed top-4 right-4 z-50">
         <Button 
-          variant="ghost" 
-          size="sm" 
-          className="w-10 h-10 rounded-full bg-dark-light border border-gray-800 p-2"
+          variant="outline"
+          size="icon"
+          className="bg-dark-light border-gray-800"
           onClick={toggleMobileSidebar}
         >
-          <Menu className="h-5 w-5" />
+          {isMobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </Button>
       </div>
       
-      {/* Mobile sidebar overlay */}
+      {/* Mobile Overlay */}
       {isMobileOpen && (
         <div 
-          className="md:hidden fixed inset-0 bg-black/50 z-40"
+          className="lg:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-40"
           onClick={() => setIsMobileOpen(false)}
-        ></div>
+        />
       )}
       
       {/* Sidebar */}
       <aside className={`
-        fixed md:relative z-50 
-        ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'} 
-        md:translate-x-0 transition-transform duration-300 
-        h-screen bg-dark-light border-r border-gray-800
+        fixed lg:relative z-50 
+        ${isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'} 
+        transition-transform duration-300 ease-in-out
+        h-[100dvh] bg-dark-light border-r border-gray-800
         ${isCollapsed ? 'w-16' : 'w-64'}
       `}>
         <div className="flex flex-col h-full">
           {/* Header */}
-          <div className="p-4 border-b border-gray-800 flex items-center justify-between">
+          <div className="p-4 border-b border-gray-800 flex items-center justify-between min-h-[60px]">
             {!isCollapsed && (
               <h2 className="text-lg font-semibold text-white">Admin Panel</h2>
             )}
@@ -84,7 +85,7 @@ export function AdminSidebar({ activeSection }: AdminSidebarProps) {
             <Button 
               variant="ghost" 
               size="sm" 
-              className={`p-1.5 hover:bg-gray-700 rounded-md ${isCollapsed ? 'mx-auto' : ''}`}
+              className={`hidden lg:flex p-1.5 hover:bg-gray-700 rounded-md ${isCollapsed ? 'mx-auto' : ''}`}
               onClick={toggleSidebar}
             >
               {isCollapsed ? <Menu className="h-5 w-5" /> : <X className="h-5 w-5" />}
@@ -92,20 +93,21 @@ export function AdminSidebar({ activeSection }: AdminSidebarProps) {
           </div>
           
           {/* Navigation */}
-          <nav className="flex-grow p-4">
+          <nav className="flex-grow p-4 overflow-y-auto">
             <ul className="space-y-2">
               {sidebarItems.map((item) => (
                 <li key={item.id}>
                   <Link href={`/admin/${item.id === 'dashboard' ? '' : item.id}`}>
                     <a
                       className={`
-                        flex items-center p-2 rounded-md transition-colors
+                        flex items-center p-3 rounded-md transition-colors
                         ${activeSection === item.id ? 'bg-primary/20 text-white' : 'text-gray-300 hover:bg-primary/10 hover:text-white'}
+                        ${isCollapsed ? 'justify-center' : ''}
                       `}
                       onClick={() => setIsMobileOpen(false)}
                     >
-                      <span className={isCollapsed ? 'mx-auto' : ''}>{item.icon}</span>
-                      {!isCollapsed && <span className="ml-3">{item.label}</span>}
+                      <span>{item.icon}</span>
+                      {!isCollapsed && <span className="ml-3 text-sm">{item.label}</span>}
                     </a>
                   </Link>
                 </li>
@@ -118,13 +120,13 @@ export function AdminSidebar({ activeSection }: AdminSidebarProps) {
             <Button 
               variant="ghost" 
               className={`
-                w-full flex items-center justify-${isCollapsed ? 'center' : 'start'} 
-                p-2 text-red-400 hover:bg-red-900/20
+                w-full flex items-center ${isCollapsed ? 'justify-center' : 'justify-start'}
+                p-3 text-red-400 hover:bg-red-900/20 rounded-md
               `}
               onClick={handleLogout}
             >
               <LogOut className="h-5 w-5" />
-              {!isCollapsed && <span className="ml-3">Logout</span>}
+              {!isCollapsed && <span className="ml-3 text-sm">Logout</span>}
             </Button>
           </div>
         </div>

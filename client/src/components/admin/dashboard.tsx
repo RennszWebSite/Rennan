@@ -1,9 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Stream, Announcement, SiteSettings } from "@shared/schema";
 import { 
-  FaUsers, 
-  FaEye, 
-  FaBell, 
   FaBullhorn, 
   FaVideo, 
   FaImages, 
@@ -27,11 +24,7 @@ export function Dashboard() {
     queryKey: ["/api/site-settings"],
   });
   
-  const stats = {
-    followers: streams?.reduce((acc, stream) => acc + (stream.followers || 0), 0).toString() || "0",
-    viewers: streams?.reduce((acc, stream) => acc + (stream.currentViewers || 0), 0).toString() || "0",
-    subscribers: streams?.reduce((acc, stream) => acc + (stream.subscribers || 0), 0).toString() || "0"
-  };
+  // Stats removed as they were inaccurate
 
   const handleNavigate = (path: string) => {
     setLocation(path);
@@ -41,43 +34,7 @@ export function Dashboard() {
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-6">Dashboard</h2>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div className="bg-dark-light p-6 rounded-lg border border-gray-800">
-          <div className="flex items-center">
-            <div className="p-3 rounded-full bg-primary/20 text-primary">
-              <FaUsers className="text-2xl" />
-            </div>
-            <div className="ml-4">
-              <h3 className="text-gray-400 text-sm">Total Followers</h3>
-              <span className="text-2xl font-semibold text-white">{stats.followers}</span>
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-dark-light p-6 rounded-lg border border-gray-800">
-          <div className="flex items-center">
-            <div className="p-3 rounded-full bg-secondary/20 text-secondary">
-              <FaEye className="text-2xl" />
-            </div>
-            <div className="ml-4">
-              <h3 className="text-gray-400 text-sm">Current Viewers</h3>
-              <span className="text-2xl font-semibold text-white">{stats.viewers}</span>
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-dark-light p-6 rounded-lg border border-gray-800">
-          <div className="flex items-center">
-            <div className="p-3 rounded-full bg-accent-teal/20 text-accent-teal">
-              <FaBell className="text-2xl" />
-            </div>
-            <div className="ml-4">
-              <h3 className="text-gray-400 text-sm">Subscribers</h3>
-              <span className="text-2xl font-semibold text-white">{stats.subscribers}</span>
-            </div>
-          </div>
-        </div>
-      </div>
+      {/* Stats section removed as it was inaccurate */}
       
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-dark-light p-6 rounded-lg border border-gray-800">

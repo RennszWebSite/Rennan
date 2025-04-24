@@ -164,14 +164,14 @@ export function HeroSection() {
           </div>
           <div className="p-6">
             <div className="flex flex-col space-y-4">
-              <div className="flex justify-between items-center">
-                <div>
-                  <h2 className="text-xl font-bold">{activeStream?.name || "Stream loading..."}</h2>
-                  <p className="text-gray-400">{activeStream?.description || "Loading stream information..."}</p>
+              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+                <div className="flex-1 min-w-0">
+                  <h2 className="text-xl font-bold truncate">{activeStream?.name || "Stream loading..."}</h2>
+                  <p className="text-gray-400 text-sm sm:text-base">{activeStream?.description || "Loading stream information..."}</p>
                 </div>
                 <div className="flex items-center">
                   {!isStreamOffline && (
-                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-600 text-white">
+                    <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-600 text-white whitespace-nowrap">
                       <span className="w-2 h-2 bg-white rounded-full mr-2 animate-pulse"></span>
                       LIVE
                     </span>
@@ -181,24 +181,26 @@ export function HeroSection() {
               
               {/* Stream switching buttons */}
               {allStreams && allStreams.length > 1 && (
-                <div className="flex space-x-2 mt-2">
-                  <div className="text-sm text-gray-400 mr-2 mt-1">Switch channel:</div>
-                  {allStreams.map(stream => (
-                    <Button
-                      key={stream.id}
-                      onClick={() => handleStreamSwitch(stream)}
-                      className={cn(
-                        "px-3 py-1 rounded-md transition-all",
-                        activeStream?.id === stream.id
-                          ? "bg-primary text-white"
-                          : "bg-dark-light hover:bg-dark/70 text-gray-300"
-                      )}
-                      size="sm"
-                    >
-                      <FaTwitch className="mr-2 h-3 w-3" />
-                      {stream.type} Channel
-                    </Button>
-                  ))}
+                <div className="flex flex-col sm:flex-row gap-2 mt-4 sm:mt-2">
+                  <div className="text-sm text-gray-400 sm:mr-2 sm:mt-1">Switch channel:</div>
+                  <div className="flex flex-wrap gap-2">
+                    {allStreams.map(stream => (
+                      <Button
+                        key={stream.id}
+                        onClick={() => handleStreamSwitch(stream)}
+                        className={cn(
+                          "px-3 py-1 rounded-md transition-all w-full sm:w-auto",
+                          activeStream?.id === stream.id
+                            ? "bg-primary text-white"
+                            : "bg-dark-light hover:bg-dark/70 text-gray-300"
+                        )}
+                        size="sm"
+                      >
+                        <FaTwitch className="mr-2 h-3 w-3" />
+                        {stream.type} Channel
+                      </Button>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>

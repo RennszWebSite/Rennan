@@ -49,7 +49,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       type: "IRL",
       isFeatured: true,
     });
-    
+
     await storage.createStream({
       name: "RENNSZINO - Gaming & Chill",
       url: "https://www.twitch.tv/rennszino",
@@ -273,6 +273,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ error: error.errors });
       }
       res.status(500).json({ error: "Failed to update site settings" });
+    }
+  });
+
+  // Twitch Tracker stats endpoint
+  app.get("/api/twitch/:channel", async (req, res) => {
+    try {
+      const { channel } = req.params;
+      const response = await fetch(`https://twitchtracker.com/${channel}`);
+      const html = await response.text();
+
+      // Extract stats from HTML
+      let viewerMatch = html.match(/Average viewers.*?>([\d,]+)/);
+      let followerMatch = html.match(/Followers.*?>([\d,]+)/);
+
+      const viewers = viewerMatch ? parseInt(viewerMatch[1].replace(/,/g, '')) : 0;
+      const followers = followerMatch ? parseInt(followerMatch[1].replace(/,/g, '')) : 0;
+
+      // Check if stream is live by looking for "LIVE" indicator
+      const isLive = html.includes('class="live"');
+
+      res.json({
+        isLive,
+        viewers,
+        followers,
+        subscribers: 0 // TwitchTracker doesn't show sub count
+      });
+    } catch (error) {
+      console.error('Error fetching Twitch Tracker data:', error);
+      res.status(500).json({ error: "Failed to fetch stream data" });
     }
   });
 

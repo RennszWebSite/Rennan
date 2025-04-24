@@ -10,7 +10,9 @@ import session from "express-session";
 import createMemoryStore from "memorystore";
 import connectPg from "connect-pg-simple";
 import { db, pool } from "./db";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, not } from "drizzle-orm";
+import { scrypt, randomBytes, timingSafeEqual } from "crypto";
+import { promisify } from "util";
 
 const MemoryStore = createMemoryStore(session);
 
@@ -360,9 +362,18 @@ export class DatabaseStorage implements IStorage {
       // Check if admin user exists, if not create default admin
       const adminExists = await this.getUserByUsername("admin");
       if (!adminExists) {
+        // Create a function to hash the password directly here to avoid circular imports
+        const scryptAsync = promisify(scrypt);
+        const hashPassword = async (password: string) => {
+          const salt = randomBytes(16).toString("hex");
+          const buf = (await scryptAsync(password, salt, 64)) as Buffer;
+          return `${buf.toString("hex")}.${salt}`;
+        };
+        
+        const hashedPassword = await hashPassword("password");
         await this.createUser({
           username: "admin",
-          password: "password", // This should be properly hashed in auth.ts
+          password: hashedPassword,
           isAdmin: true
         });
       }
@@ -480,7 +491,7 @@ export class DatabaseStorage implements IStorage {
     if (stream.isFeatured) {
       await db.update(streams)
         .set({ isFeatured: false })
-        .where(eq(streams.id, id).not());
+        .where(not(eq(streams.id, id)));
     }
     
     const [updatedStream] = await db

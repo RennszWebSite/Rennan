@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Announcement } from "@shared/schema";
 import { format, formatDistanceToNow } from "date-fns";
 import { Loader2 } from "lucide-react";
-import { FaBullhorn, FaStar, FaGift } from "react-icons/fa";
+import { FaBullhorn, FaStar, FaGift, FaCalendarAlt, FaMicrophone } from "react-icons/fa";
 
 export function AnnouncementsSection() {
   const { data: announcements, isLoading } = useQuery<Announcement[]>({
@@ -44,7 +44,10 @@ export function AnnouncementsSection() {
         return <FaStar />;
       case 'giveaway':
         return <FaGift />;
-      case 'travel update':
+      case 'schedule':
+        return <FaCalendarAlt />;
+      case 'equipment':
+        return <FaMicrophone />;
       default:
         return <FaBullhorn />;
     }
@@ -56,7 +59,10 @@ export function AnnouncementsSection() {
         return 'border-primary';
       case 'giveaway':
         return 'border-accent-purple';
-      case 'travel update':
+      case 'schedule':
+        return 'border-accent-teal';
+      case 'equipment':
+        return 'border-red-500';
       default:
         return 'border-secondary';
     }
@@ -68,7 +74,10 @@ export function AnnouncementsSection() {
         return 'bg-primary/20 text-primary';
       case 'giveaway':
         return 'bg-accent-purple/20 text-accent-purple';
-      case 'travel update':
+      case 'schedule':
+        return 'bg-accent-teal/20 text-accent-teal';
+      case 'equipment':
+        return 'bg-red-500/20 text-red-500';
       default:
         return 'bg-secondary/20 text-secondary';
     }

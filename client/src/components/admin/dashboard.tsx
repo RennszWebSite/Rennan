@@ -28,9 +28,9 @@ export function Dashboard() {
   });
   
   const stats = {
-    followers: "0",
-    viewers: "0",
-    subscribers: "0"
+    followers: streams?.reduce((acc, stream) => acc + (stream.followers || 0), 0).toString() || "0",
+    viewers: streams?.reduce((acc, stream) => acc + (stream.currentViewers || 0), 0).toString() || "0",
+    subscribers: streams?.reduce((acc, stream) => acc + (stream.subscribers || 0), 0).toString() || "0"
   };
 
   const handleNavigate = (path: string) => {
@@ -86,11 +86,11 @@ export function Dashboard() {
             {streams?.map((stream) => (
               <div key={stream.id} className="flex justify-between items-center">
                 <div className="flex items-center">
-                  <span className={`w-3 h-3 ${stream.isFeatured ? 'bg-green-500' : 'bg-gray-500'} rounded-full mr-2`}></span>
+                  <span className={`w-3 h-3 ${stream.isLive ? 'bg-green-500' : 'bg-gray-500'} rounded-full mr-2`}></span>
                   <span>{stream.name}</span>
                 </div>
-                <span className={stream.isFeatured ? 'text-green-500' : 'text-gray-500'}>
-                  {stream.isFeatured ? 'Live' : 'Offline'}
+                <span className={stream.isLive ? 'text-green-500' : 'text-gray-500'}>
+                  {stream.isLive ? `Live (${stream.currentViewers || 0} viewers)` : 'Offline'}
                 </span>
               </div>
             ))}

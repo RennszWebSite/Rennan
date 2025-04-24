@@ -84,6 +84,39 @@ export function SiteSettingsManager() {
     }
   });
 
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+
+  const changePasswordMutation = useMutation({
+    mutationFn: async (data: { currentPassword: string; newPassword: string }) => {
+      const response = await fetch("/api/update-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to update password");
+      }
+    },
+    onSuccess: () => {
+      toast({
+        title: "Success",
+        description: "Password updated successfully",
+      });
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to update password",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -109,15 +142,31 @@ export function SiteSettingsManager() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     const updateData: UpdateSiteSettings = {
       siteTitle: formData.siteTitle,
       metaDescription: formData.metaDescription,
       footerText: formData.footerText,
       socialLinks: formData.socialLinks
     };
-    
+
     updateMutation.mutate(updateData);
+  };
+
+  const handlePasswordChange = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newPassword !== confirmPassword) {
+      toast({
+        title: "Error",
+        description: "New passwords don't match",
+        variant: "destructive",
+      });
+      return;
+    }
+    changePasswordMutation.mutate({
+      currentPassword,
+      newPassword,
+    });
   };
 
   if (isLoading) {
@@ -131,7 +180,7 @@ export function SiteSettingsManager() {
   return (
     <div className="p-6">
       <h2 className="text-2xl font-bold mb-6">Site Settings</h2>
-      
+
       <form onSubmit={handleSubmit} className="space-y-8">
         <div className="bg-dark-light rounded-xl p-6 shadow-lg">
           <h3 className="text-lg font-semibold mb-4">General Settings</h3>
@@ -177,7 +226,7 @@ export function SiteSettingsManager() {
             </div>
           </div>
         </div>
-        
+
         <div className="bg-dark-light rounded-xl p-6 shadow-lg">
           <h3 className="text-lg font-semibold mb-4">Social Media Links</h3>
           <div className="space-y-4">
@@ -243,7 +292,7 @@ export function SiteSettingsManager() {
             </div>
           </div>
         </div>
-        
+
         <div className="flex justify-end">
           <Button 
             type="submit"
@@ -257,6 +306,45 @@ export function SiteSettingsManager() {
           </Button>
         </div>
       </form>
+
+      <div className="mt-8">
+        <h3 className="text-lg font-semibold mb-4">Change Admin Password</h3>
+        <form onSubmit={handlePasswordChange} className="space-y-4">
+          <div>
+            <Label htmlFor="currentPassword">Current Password</Label>
+            <Input
+              id="currentPassword"
+              type="password"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <Label htmlFor="newPassword">New Password</Label>
+            <Input
+              id="newPassword"
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              required
+            />
+          </div>
+          <div>
+            <Label htmlFor="confirmPassword">Confirm New Password</Label>
+            <Input
+              id="confirmPassword"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              required
+            />
+          </div>
+          <Button type="submit" variant="secondary" className="w-full">
+            Update Password
+          </Button>
+        </form>
+      </div>
     </div>
   );
 }

@@ -16,6 +16,10 @@ export const streams = pgTable("streams", {
   description: text("description"),
   type: text("type").notNull(),
   isFeatured: boolean("is_featured").default(false),
+  isLive: boolean("is_live").default(false), // Added
+  currentViewers: integer("current_viewers").default(0), // Added
+  followers: integer("followers").default(0), // Added
+  subscribers: integer("subscribers").default(0), // Added
 });
 
 export const announcements = pgTable("announcements", {

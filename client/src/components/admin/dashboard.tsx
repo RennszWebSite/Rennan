@@ -28,9 +28,9 @@ export function Dashboard() {
   });
   
   const stats = {
-    followers: "54.2K",
-    viewers: "1.2K",
-    subscribers: "3.8K"
+    followers: "0",
+    viewers: "0",
+    subscribers: "0"
   };
 
   const handleNavigate = (path: string) => {

@@ -15,7 +15,7 @@ export function AnnouncementsSection() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-white">Latest Announcements</h2>
-            <p className="mt-4 text-xl text-gray-300">Stay updated with the latest news and travel plans</p>
+            <p className="mt-4 text-xl text-gray-300">Stay updated with stream schedules and equipment upgrades</p>
           </div>
           <div className="flex justify-center">
             <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -79,7 +79,7 @@ export function AnnouncementsSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-4xl font-bold text-white">Latest Announcements</h2>
-          <p className="mt-4 text-xl text-gray-300">Stay updated with the latest news and travel plans</p>
+          <p className="mt-4 text-xl text-gray-300">Stay updated with stream schedules and equipment upgrades</p>
         </div>
         
         <div className="space-y-8">
@@ -111,7 +111,7 @@ export function AnnouncementsSection() {
                       />
                       <div className="ml-4">
                         <a href="#" className="text-accent-teal hover:underline">
-                          {announcement.type.toLowerCase() === 'travel update' ? 'Set a reminder' : 'Learn more'}
+                          {announcement.type.toLowerCase() === 'schedule' ? 'Schedule reminder' : 'Learn more'}
                         </a>
                       </div>
                     </div>

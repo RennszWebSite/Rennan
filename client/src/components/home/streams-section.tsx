@@ -40,9 +40,9 @@ export function StreamsSection() {
 
   const getStreamImage = (type: string) => {
     if (type.toLowerCase() === 'gaming') {
-      return "https://images.unsplash.com/photo-1542751371-adc38448a05e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80";
+      return "/assets/IMG_2457.png";
     } else {
-      return "https://images.unsplash.com/photo-1603190287605-e6ade32fa852?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80";
+      return "/assets/IMG_2458.jpeg";
     }
   };
 

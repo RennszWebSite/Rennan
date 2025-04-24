@@ -1,38 +1,29 @@
-import passport from "passport";
-import { Strategy as LocalStrategy } from "passport-local";
 import { Express } from "express";
 import session from "express-session";
-import { scrypt, randomBytes, timingSafeEqual } from "crypto";
-import { promisify } from "util";
+import { compareSync, hashSync } from "bcryptjs";
 import { storage } from "./storage";
-import { User as SelectUser } from "@shared/schema";
 
-declare global {
-  namespace Express {
-    interface User extends SelectUser {}
-  }
+// Simple admin auth with just password
+const ADMIN_PASSWORD = "admin123"; // Default password, can be changed in admin settings
+let currentAdminPassword = ADMIN_PASSWORD;
+
+export function hashPassword(password: string) {
+  return hashSync(password, 10);
 }
 
-const scryptAsync = promisify(scrypt);
-
-export async function hashPassword(password: string) {
-  const salt = randomBytes(16).toString("hex");
-  const buf = (await scryptAsync(password, salt, 64)) as Buffer;
-  return `${buf.toString("hex")}.${salt}`;
+export function comparePasswords(supplied: string, stored: string) {
+  return compareSync(supplied, stored);
 }
 
-async function comparePasswords(supplied: string, stored: string) {
-  const [hashed, salt] = stored.split(".");
-  const hashedBuf = Buffer.from(hashed, "hex");
-  const suppliedBuf = (await scryptAsync(supplied, salt, 64)) as Buffer;
-  return timingSafeEqual(hashedBuf, suppliedBuf);
+// Simple user interface for admin session
+interface AdminUser {
+  id: number;
+  isAdmin: boolean;
 }
 
 export async function setupAuth(app: Express) {
-  // Admin user initialization has been moved to DatabaseStorage initializeDefaults()
-
   const sessionSettings: session.SessionOptions = {
-    secret: process.env.SESSION_SECRET || "RENNSZ-luxury-travel-streaming-secret",
+    secret: process.env.SESSION_SECRET || "RENNSZ-streaming-secret",
     resave: false,
     saveUninitialized: false,
     store: storage.sessionStore,
@@ -44,61 +35,60 @@ export async function setupAuth(app: Express) {
 
   app.set("trust proxy", 1);
   app.use(session(sessionSettings));
-  app.use(passport.initialize());
-  app.use(passport.session());
-
-  passport.use(
-    new LocalStrategy(async (username, password, done) => {
-      try {
-        const user = await storage.getUserByUsername(username);
-        if (!user || !(await comparePasswords(password, user.password))) {
-          return done(null, false);
-        } else {
-          return done(null, user);
-        }
-      } catch (err) {
-        return done(err);
-      }
-    }),
-  );
-
-  passport.serializeUser((user, done) => done(null, user.id));
-  passport.deserializeUser(async (id: number, done) => {
-    try {
-      const user = await storage.getUser(id);
-      done(null, user);
-    } catch (err) {
-      done(err);
+  
+  // Simple admin login with just password
+  app.post("/api/login", (req, res) => {
+    const { password } = req.body;
+    
+    // Check if password matches
+    if (password === currentAdminPassword) {
+      // Create admin session
+      req.session.admin = { id: 1, isAdmin: true };
+      return res.status(200).json({ id: 1, username: "admin", isAdmin: true });
     }
+    
+    return res.status(401).json({ message: "Invalid password" });
   });
 
-  app.post("/api/login", passport.authenticate("local"), (req, res) => {
-    res.status(200).json(req.user);
-  });
-
-  app.post("/api/logout", (req, res, next) => {
-    req.logout((err) => {
-      if (err) return next(err);
-      res.sendStatus(200);
+  app.post("/api/logout", (req, res) => {
+    req.session.destroy((err) => {
+      if (err) {
+        return res.status(500).json({ message: "Failed to log out" });
+      }
+      res.clearCookie("connect.sid");
+      return res.status(200).json({ message: "Logged out successfully" });
     });
   });
 
   app.get("/api/user", (req, res) => {
-    if (!req.isAuthenticated()) return res.sendStatus(401);
-    res.json(req.user);
+    if (!req.session.admin) {
+      return res.sendStatus(401);
+    }
+    
+    return res.status(200).json({ id: 1, username: "admin", isAdmin: true });
   });
 
   // Admin check middleware
   app.use("/api/admin/*", (req, res, next) => {
-    if (!req.isAuthenticated()) {
+    if (!req.session.admin) {
       return res.status(401).json({ message: "Unauthorized" });
     }
     
-    const user = req.user as SelectUser;
-    if (!user.isAdmin) {
-      return res.status(403).json({ message: "Forbidden - Admin access required" });
+    next();
+  });
+  
+  // Update admin password
+  app.post("/api/update-password", (req, res) => {
+    if (!req.session.admin) {
+      return res.status(401).json({ message: "Unauthorized" });
     }
     
-    next();
+    const { newPassword } = req.body;
+    if (!newPassword || newPassword.length < 6) {
+      return res.status(400).json({ message: "Password must be at least 6 characters" });
+    }
+    
+    currentAdminPassword = newPassword;
+    return res.status(200).json({ message: "Password updated successfully" });
   });
 }

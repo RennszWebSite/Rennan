@@ -4,15 +4,20 @@ import {
   useMutation,
   UseMutationResult,
 } from "@tanstack/react-query";
-import { User, LoginCredentials } from "@shared/schema";
+import { User } from "@shared/schema";
 import { getQueryFn, apiRequest, queryClient } from "../lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+
+// Simple interface for password-only login
+interface AdminLoginCredentials {
+  password: string;
+}
 
 type AuthContextType = {
   user: User | null;
   isLoading: boolean;
   error: Error | null;
-  loginMutation: UseMutationResult<User, Error, LoginCredentials>;
+  loginMutation: UseMutationResult<User, Error, AdminLoginCredentials>;
   logoutMutation: UseMutationResult<void, Error, void>;
 };
 
@@ -30,7 +35,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   const loginMutation = useMutation({
-    mutationFn: async (credentials: LoginCredentials) => {
+    mutationFn: async (credentials: AdminLoginCredentials) => {
       const res = await apiRequest("POST", "/api/login", credentials);
       return await res.json();
     },
@@ -38,13 +43,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       queryClient.setQueryData(["/api/user"], user);
       toast({
         title: "Login successful",
-        description: "Welcome back!",
+        description: "Welcome to admin panel!",
       });
     },
     onError: (error: Error) => {
       toast({
         title: "Login failed",
-        description: "Invalid username or password. Please try again.",
+        description: "Invalid admin password. Please try again.",
         variant: "destructive",
       });
     },

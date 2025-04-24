@@ -5,25 +5,13 @@ import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { FaLock, FaUserCircle } from "react-icons/fa";
-import { LoginCredentials } from "@shared/schema";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FaLock } from "react-icons/fa";
 
 export default function AuthPage() {
-  const [activeTab, setActiveTab] = useState<string>("login");
-  const [loginData, setLoginData] = useState<LoginCredentials>({
-    username: "",
-    password: ""
-  });
-  
-  const [registerData, setRegisterData] = useState({
-    username: "",
-    password: "",
-    confirmPassword: ""
-  });
+  const [password, setPassword] = useState("");
 
   const { user, loginMutation, isLoading } = useAuth();
   const [, navigate] = useLocation();
@@ -31,32 +19,17 @@ export default function AuthPage() {
   // Redirect if already logged in
   useEffect(() => {
     if (user) {
-      navigate(user.isAdmin ? "/admin" : "/");
+      navigate("/admin");
     }
   }, [user, navigate]);
 
   const handleLoginSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    loginMutation.mutate(loginData);
+    loginMutation.mutate({ password });
   };
 
-  const handleRegisterSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Registration is purposely not implemented since we only
-    // want the admin user to be able to log in with predetermined credentials
-    
-    // Show message that registration is disabled
-    alert("New user registration is currently disabled. Please use the provided admin credentials to log in.");
-  };
-
-  const handleLoginInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setLoginData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleRegisterInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setRegisterData(prev => ({ ...prev, [name]: value }));
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
   };
 
   if (isLoading) {
@@ -80,139 +53,41 @@ export default function AuthPage() {
               </span>
             </h1>
             
-            <Tabs defaultValue="login" value={activeTab} onValueChange={setActiveTab} className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-8">
-                <TabsTrigger value="login">Login</TabsTrigger>
-                <TabsTrigger value="register">Register</TabsTrigger>
-              </TabsList>
+            <form onSubmit={handleLoginSubmit} className="space-y-6 mt-8">
+              <div className="space-y-2">
+                <Label htmlFor="password">Admin Password</Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                    <FaLock />
+                  </span>
+                  <Input
+                    id="password"
+                    name="password"
+                    type="password"
+                    placeholder="Enter admin password"
+                    value={password}
+                    onChange={handlePasswordChange}
+                    className="pl-10 bg-dark border-gray-700"
+                    required
+                  />
+                </div>
+              </div>
               
-              <TabsContent value="login">
-                <form onSubmit={handleLoginSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="username">Username</Label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                        <FaUserCircle />
-                      </span>
-                      <Input
-                        id="username"
-                        name="username"
-                        placeholder="Enter your username"
-                        value={loginData.username}
-                        onChange={handleLoginInputChange}
-                        className="pl-10 bg-dark border-gray-700"
-                        required
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="password">Password</Label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                        <FaLock />
-                      </span>
-                      <Input
-                        id="password"
-                        name="password"
-                        type="password"
-                        placeholder="Enter your password"
-                        value={loginData.password}
-                        onChange={handleLoginInputChange}
-                        className="pl-10 bg-dark border-gray-700"
-                        required
-                      />
-                    </div>
-                  </div>
-                  
-                  <Button 
-                    type="submit" 
-                    className="w-full gradient-btn"
-                    disabled={loginMutation.isPending}
-                  >
-                    {loginMutation.isPending ? (
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    ) : null}
-                    Sign In
-                  </Button>
-                  
-                  <p className="text-sm text-center text-gray-400 mt-4">
-                    (Hint: Use admin/Rennsz5842 for access)
-                  </p>
-                </form>
-              </TabsContent>
+              <Button 
+                type="submit" 
+                className="w-full gradient-btn"
+                disabled={loginMutation.isPending}
+              >
+                {loginMutation.isPending ? (
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                ) : null}
+                Access Admin Panel
+              </Button>
               
-              <TabsContent value="register">
-                <form onSubmit={handleRegisterSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="reg-username">Username</Label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                        <FaUserCircle />
-                      </span>
-                      <Input
-                        id="reg-username"
-                        name="username"
-                        placeholder="Choose a username"
-                        value={registerData.username}
-                        onChange={handleRegisterInputChange}
-                        className="pl-10 bg-dark border-gray-700"
-                        required
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="reg-password">Password</Label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                        <FaLock />
-                      </span>
-                      <Input
-                        id="reg-password"
-                        name="password"
-                        type="password"
-                        placeholder="Create a password"
-                        value={registerData.password}
-                        onChange={handleRegisterInputChange}
-                        className="pl-10 bg-dark border-gray-700"
-                        required
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="confirm-password">Confirm Password</Label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                        <FaLock />
-                      </span>
-                      <Input
-                        id="confirm-password"
-                        name="confirmPassword"
-                        type="password"
-                        placeholder="Confirm your password"
-                        value={registerData.confirmPassword}
-                        onChange={handleRegisterInputChange}
-                        className="pl-10 bg-dark border-gray-700"
-                        required
-                      />
-                    </div>
-                  </div>
-                  
-                  <Button 
-                    type="submit" 
-                    className="w-full gradient-btn"
-                  >
-                    Create Account
-                  </Button>
-                  
-                  <p className="text-sm text-center text-gray-400 mt-4">
-                    Registration is currently limited to authorized personnel only.
-                  </p>
-                </form>
-              </TabsContent>
-            </Tabs>
+              <p className="text-sm text-center text-gray-400 mt-4">
+                (Default password: admin123)
+              </p>
+            </form>
           </div>
           
           {/* Right Section - Hero/Info */}
@@ -224,7 +99,7 @@ export default function AuthPage() {
               </h2>
               
               <p className="text-lg text-gray-300 mb-8">
-                Access the control panel to manage your luxury travel streaming website. Update streams, announcements, gallery images, and customize the site's appearance.
+                Access the control panel to manage your streaming website. Update streams, announcements, gallery images, and customize the site's appearance.
               </p>
               
               <Card className="bg-dark/50 border-gray-700">
@@ -234,7 +109,7 @@ export default function AuthPage() {
                 <CardContent className="space-y-2">
                   <p>✓ Manage live stream channels</p>
                   <p>✓ Post and edit announcements</p>
-                  <p>✓ Curate the travel gallery</p>
+                  <p>✓ Curate the image gallery</p>
                   <p>✓ Customize site themes and colors</p>
                   <p>✓ Update social media links</p>
                 </CardContent>

@@ -99,3 +99,8 @@ export type SiteSettings = typeof siteSettings.$inferSelect;
 
 // Auth types
 export type LoginCredentials = Pick<InsertUser, "username" | "password">;
+
+// Simple admin login with just password
+export type SimpleLoginCredentials = {
+  password: string;
+};

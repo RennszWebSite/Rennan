@@ -3,6 +3,16 @@ import session from "express-session";
 import { compareSync, hashSync } from "bcryptjs";
 import { storage } from "./storage";
 
+// Extend the session interface to include our admin property
+declare module 'express-session' {
+  interface SessionData {
+    admin?: {
+      id: number;
+      isAdmin: boolean;
+    };
+  }
+}
+
 // Simple admin auth with just password
 const ADMIN_PASSWORD = "admin123"; // Default password, can be changed in admin settings
 let currentAdminPassword = ADMIN_PASSWORD;

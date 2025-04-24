@@ -4,20 +4,15 @@ import {
   useMutation,
   UseMutationResult,
 } from "@tanstack/react-query";
-import { User } from "@shared/schema";
+import { User, SimpleLoginCredentials } from "@shared/schema";
 import { getQueryFn, apiRequest, queryClient } from "../lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
-
-// Simple interface for password-only login
-interface AdminLoginCredentials {
-  password: string;
-}
 
 type AuthContextType = {
   user: User | null;
   isLoading: boolean;
   error: Error | null;
-  loginMutation: UseMutationResult<User, Error, AdminLoginCredentials>;
+  loginMutation: UseMutationResult<User, Error, SimpleLoginCredentials>;
   logoutMutation: UseMutationResult<void, Error, void>;
 };
 
@@ -35,7 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   const loginMutation = useMutation({
-    mutationFn: async (credentials: AdminLoginCredentials) => {
+    mutationFn: async (credentials: SimpleLoginCredentials) => {
       const res = await apiRequest("POST", "/api/login", credentials);
       return await res.json();
     },

@@ -1,0 +1,126 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Base colors */
+  --background: 240 10% 3.9%;
+  --foreground: 0 0% 98%;
+  --card: 240 10% 3.9%;
+  --card-foreground: 0 0% 98%;
+  --popover: 240 10% 3.9%;
+  --popover-foreground: 0 0% 98%;
+  --primary: 266 100% 44%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 44 86% 62%;
+  --secondary-foreground: 240 10% 3.9%;
+  --muted: 240 3.7% 15.9%;
+  --muted-foreground: 240 5% 64.9%;
+  --accent: 240 3.7% 15.9%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 240 3.7% 15.9%;
+  --input: 240 3.7% 15.9%;
+  --ring: 240 4.9% 83.9%;
+  
+  /* Custom theme variables */
+  --dark: 222 47% 11%;
+  --dark-light: 222 47% 17%;
+  --accent-teal: 169 82% 51%;
+  --accent-purple: 262 93% 63%;
+  --sidebar-background: 240 10% 3.9%;
+  --sidebar-foreground: 0 0% 98%;
+  --sidebar-primary: 266 100% 44%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 240 3.7% 15.9%;
+  --sidebar-accent-foreground: 0 0% 98%;
+  --sidebar-border: 240 3.7% 15.9%;
+  --sidebar-ring: 240 4.9% 83.9%;
+  
+  /* Chart colors */
+  --chart-1: 266 100% 44%;
+  --chart-2: 44 86% 62%;
+  --chart-3: 169 82% 51%;
+  --chart-4: 262 93% 63%;
+  --chart-5: 0 62.8% 30.6%;
+
+  --radius: 0.5rem;
+}
+
+/* Christmas theme override */
+.christmas-theme {
+  --primary: 0 76% 51%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 136 50% 31%;
+  --secondary-foreground: 0 0% 100%;
+  --accent-teal: 145 53% 60%;
+  --accent-purple: 5 78% 57%;
+  --chart-1: 0 76% 51%;
+  --chart-2: 136 50% 31%;
+  --chart-3: 145 53% 60%;
+  --chart-4: 5 78% 57%;
+}
+
+/* Halloween theme override */
+.halloween-theme {
+  --primary: 24 100% 50%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 270 100% 40%;
+  --secondary-foreground: 0 0% 100%;
+  --accent-teal: 168 100% 40%;
+  --accent-purple: 300 100% 30%;
+  --chart-1: 24 100% 50%;
+  --chart-2: 270 100% 40%;
+  --chart-3: 168 100% 40%;
+  --chart-4: 300 100% 30%;
+}
+
+/* Summer theme override */
+.summer-theme {
+  --primary: 209 80% 51%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 43 100% 50%;
+  --secondary-foreground: 0 0% 10%;
+  --accent-teal: 175 100% 37%;
+  --accent-purple: 339 100% 48%;
+  --chart-1: 209 80% 51%;
+  --chart-2: 43 100% 50%;
+  --chart-3: 175 100% 37%;
+  --chart-4: 339 100% 48%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+}
+
+/* Custom styling */
+@layer components {
+  .nav-link {
+    @apply relative overflow-hidden;
+  }
+
+  .nav-link::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-0 h-0.5 bg-secondary transition-all duration-300 ease-in-out;
+  }
+
+  .nav-link:hover::after {
+    @apply w-full;
+  }
+  
+  .gradient-btn {
+    @apply bg-gradient-to-r from-primary to-accent-purple text-white hover:from-accent-purple hover:to-primary transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5;
+  }
+  
+  .card-hover {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-xl;
+  }
+}

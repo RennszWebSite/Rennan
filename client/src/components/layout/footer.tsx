@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { SiteSettings } from "@shared/schema";
-import { FaTwitch, FaTwitter, FaInstagram, FaDiscord } from "react-icons/fa";
+import { FaTwitch, FaInstagram, FaDiscord } from "react-icons/fa";
+import { RiTwitterXFill } from "react-icons/ri";
 import { Loader2 } from "lucide-react";
 
 export function Footer() {
@@ -47,8 +48,8 @@ export function Footer() {
               <span className="sr-only">Twitch</span>
             </a>
             <a href={socialLinks.twitter} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-300 transition-colors">
-              <FaTwitter size={20} />
-              <span className="sr-only">Twitter</span>
+              <RiTwitterXFill size={20} />
+              <span className="sr-only">X</span>
             </a>
             <a href={socialLinks.instagram} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-gray-300 transition-colors">
               <FaInstagram size={20} />

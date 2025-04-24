@@ -3,11 +3,11 @@ import { useQuery } from "@tanstack/react-query";
 import { SiteSettings } from "@shared/schema";
 import { 
   FaTwitch, 
-  FaTwitter, 
   FaInstagram, 
   FaDiscord, 
   FaUsers 
 } from "react-icons/fa";
+import { RiTwitterXFill } from "react-icons/ri";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -127,7 +127,7 @@ export function SocialConnectSection() {
                 rel="noopener noreferrer"
                 className="flex items-center p-4 bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors"
               >
-                <FaTwitter className="text-3xl text-white" />
+                <RiTwitterXFill className="text-3xl text-white" />
                 <div className="ml-4">
                   <h4 className="font-medium">Twitter/X</h4>
                   <p className="text-sm text-gray-400">@rennsz96</p>
@@ -180,7 +180,7 @@ export function SocialConnectSection() {
           
           <div className="bg-dark-light rounded-xl p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl">
             <h3 className="text-2xl font-bold mb-6">Stay Connected</h3>
-            <p className="text-gray-300 mb-6">Subscribe to get notifications about upcoming streams and travel plans.</p>
+            <p className="text-gray-300 mb-6">Subscribe to get notifications about upcoming streams and exclusive content.</p>
             
             <form className="space-y-4" onSubmit={handleSubmit}>
               <div>
